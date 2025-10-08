@@ -1,0 +1,239 @@
+{
+  "better_canvas": {
+    "message": "Betere Canvas"
+  },
+  "updates": {
+    "message": "Updates"
+  },
+  "dark_mode": {
+    "message": "Donkere Modus"
+  },
+  "automatic_dark_mode": {
+    "message": "Geplande Donkere Modus"
+  },
+  "auto_start_time": {
+    "message": "Starttijd"
+  },
+  "auto_end_time": {
+    "message": "Eindtijd"
+  },
+  "edit_dark_mode": {
+    "message": "Donkere Modus Bewerken"
+  },
+  "enter_url": {
+    "message": "Je Canvas URL:"
+  },
+  "card_grades": {
+    "message": "Cijferkaarten"
+  },
+  "gradient_cards": {
+    "message": "Gradient Kaarten"
+  },
+  "condensed_cards": {
+    "message": "Compacte Kaarten"
+  },
+  "disable_color": {
+    "message": "Kleuroverlay Uitschakelen"
+  },
+  "card_assignments": {
+    "message": "Kaart Opdrachten"
+  },
+  "card_customization": {
+    "message": "Kaarten"
+  },
+  "custom_font": {
+    "message": "Lettertypen"
+  },
+  "useddmm": {
+    "message": "Gebruik dd/mm"
+  },
+  "better_todo": {
+    "message": "Verbeterde Takenlijst"
+  },
+  "max_items": {
+    "message": "Maximaal Aantal Items: "
+  },
+  "hover_preview": {
+    "message": "Hover Voor Details"
+  },
+  "hide_completed": {
+    "message": "Voltooide Verbergen"
+  },
+  "24hrformat": {
+    "message": "Gebruik 24-uur Formaat"
+  },
+  "dashboard_notes": {
+    "message": "Dashboard Notities"
+  },
+  "gpa_calculator": {
+    "message": "Cijfergemiddelde Berekenen"
+  },
+  "gpa_settings": {
+    "message": "Cijfergemiddelde Instellingen"
+  },
+  "grade_hover": {
+    "message": "Alleen Bij Hover Tonen"
+  },
+  "due": {
+    "message": "Deadline"
+  },
+  "card_colors": {
+    "message": "Kaart Kleuren"
+  },
+  "back": {
+    "message": "Terug"
+  },
+  "more_options": {
+    "message": "Meer Opties"
+  },
+  "manual_customization": {
+    "message": "Handmatige Aanpassing"
+  },
+  "background_colors": {
+    "message": "Achtergrond"
+  },
+  "text_colors": {
+    "message": "Tekst"
+  },
+  "full_width": {
+    "message": "Dashboard Volledige Breedte"
+  },
+  "report_issue": {
+    "message": "Probleem Melden"
+  },
+  "themes": {
+    "message": "Thema's"
+  },
+  "move_top": {
+    "message": "Naar Boven Verplaatsen"
+  },
+  "show_past_due": {
+    "message": "Deadline Tonen"
+  },
+  "relative_due_dates": {
+    "message": "Relatieve Deadlines"
+  },
+  "enter_multiple": {
+    "message": "(Meerdere Invoeren Met Een Komma)"
+  },
+  "todo_remind": {
+    "message": "Herinneringen Voor Taken"
+  },
+  "remlogo": {
+    "message": "Zijbalklogo Verwijderen"
+  },
+  "hide_feedback": {
+    "message": "Recente Feedback Verbergen"
+  },
+  "tab_icons": {
+    "message": "Gekleurde Tab Iconen"
+  },
+  "todo_colors": {
+    "message": "Gebruik Kaart Kleuren"
+  },
+  "gpa_calc_cumulative": {
+    "message": "Totaal Gemiddelde Tonen"
+  },
+  "gpa_calc_weighted": {
+    "message": "Gewogen Cijfergemiddelde Tonen"
+  },
+  "device_dark": {
+    "message": "Systeeminstelling Voor Donkere Modus Gebruiken"
+  },
+  "presets": {
+    "message": "Voorinstellingen"
+  },
+  "dark_lighter": {
+    "message": "Lichter"
+  },
+  "dark_light": {
+    "message": "Licht"
+  },
+  "dark_default": {
+    "message": "Standaard"
+  },
+  "dark_dark": {
+    "message": "Donker"
+  },
+  "dark_darker": {
+    "message": "Donkerder"
+  },
+  "dark_mint": {
+    "message": "Mint"
+  },
+  "dark_blue": {
+    "message": "Blauwe tint"
+  },
+  "dark_burn": {
+    "message": "Heftig"
+  },
+  "dark_unicorn": {
+    "message": "Unicorn"
+  },
+  "dark_lightmode": {
+    "message": "Lightmode"
+  },
+  "dark_catppuccin": {
+    "message": "Catppuccin\n Door Angel"
+  },
+  "dark_sage": {
+    "message": "Sage\n Door LivDoesDevStuf"
+  },
+  "dark_pink": {
+    "message": "Roze\n Door Sayde"
+  },
+  "dark_coral": {
+    "message": "Koraal\n Door Superchido"
+  },
+  "dp_sidebar_text": {
+    "message": "Zijbalktekst"
+  },
+  "dp_sidebar": {
+    "message": "Zijbalk"
+  },
+  "radio_sidebar_solid": {
+    "message": "Effen"
+  },
+  "radio_sidebar_gradient": {
+    "message": "Gradient"
+  },
+  "radio_sidebar_image": {
+    "message": "Afbeelding"
+  },
+  "dp_background_0": {
+    "message": "Hoofdachtergrond"
+  },
+  "dp_background_1": {
+    "message": "Alternatieve Achtergrond"
+  },
+  "dp_background_2": {
+    "message": "Overige Achtergrond"
+  },
+  "dp_borders": {
+    "message": "Randen"
+  },
+  "dp_links": {
+    "message": "Links"
+  },
+  "dp_text_0": {
+    "message": "Hoofdtekst"
+  },
+  "dp_text_1": {
+    "message": "Overige Tekst"
+  },
+  "dp_text_2": {
+    "message": "Alternatieve Tekst"
+  },
+  "dark_mode_fixer": {
+    "message": "Dark Mode Fixer (Bèta)"
+  },
+  "dark_mode_fixer_text": {
+    "message": "Dit probeert problemen in de donkere modus op de huidige pagina te verbeteren."
+  },
+  "fix_dm_btn": {
+    "message": "Uitvoeren"
+  },
+  "fix_dm_text": {
+    "message": "De fixer wordt automatisch uitgevoerd op deze pagina's:"
+  }
+}
