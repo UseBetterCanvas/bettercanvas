@@ -25,7 +25,7 @@ chrome.runtime.onInstalled.addListener(function () {
             "assignments_due": true,
             "gpa_calc": false,
             "dark_mode": true,
-            "gradent_cards": false,
+            "gradient_cards": false,
             "disable_color_overlay": false,
             "auto_dark": false,
             "auto_dark_start": { "hour": "20", "minute": "00" },

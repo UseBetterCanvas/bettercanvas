@@ -28,7 +28,7 @@ const defaultOptions = {
         "assignments_due": true,
         "gpa_calc": false,
         "dark_mode": true,
-        "gradent_cards": false,
+        "gradient_cards": false,
         "disable_color_overlay": false,
         "auto_dark": false,
         "auto_dark_start": { "hour": "20", "minute": "00" },
@@ -120,7 +120,7 @@ function displayDarkModeFixUrls() {
                 chrome.storage.sync.get("dark_mode_fix", sync => {
                     for (let i = 0; i < sync["dark_mode_fix"].length; i++) {
                         if (sync["dark_mode_fix"][i] === url) {
-                            sync["dark_mode_fix"].splice(i);
+                            sync["dark_mode_fix"].splice(i, 1);
                             chrome.storage.sync.set({ "dark_mode_fix": sync["dark_mode_fix"] }).then(() => div.remove());
                         }
                     }
@@ -351,8 +351,12 @@ function setup() {
 
     // activate import input box
     document.querySelector("#import-input").addEventListener("input", (e) => {
-        const obj = JSON.parse(e.target.value);
-        importTheme(obj);
+        try {
+            const obj = JSON.parse(e.target.value);
+            importTheme(obj);
+        } catch (err) {
+            // invalid JSON while user is still typing — ignore silently
+        }
     });
 
     // activate export checkbox
@@ -988,7 +992,7 @@ async function displayThemeListNew(direction) {
     if (direction === 1 && current_page_num < maxPage) current_page_num++;
 
     let themes = [];
-    let apiLink = `${current_sort.toLowerCase()}?page=${current_page_num}` + (searchFor === "" ? "" : `&searchFor=${searchFor}`);
+    let apiLink = `${current_sort.toLowerCase()}?page=${current_page_num}` + (searchFor === "" ? "" : `&searchFor=${encodeURIComponent(searchFor)}`);
     if (current_sort === "Liked") {
         const sync = await chrome.storage.sync.get("id");
         const local = await chrome.storage.local.get("liked_themes");
@@ -997,7 +1001,7 @@ async function displayThemeListNew(direction) {
             maxPage = Math.ceil(local["liked_themes"].length / 28);
         } else { // fallback if there is no id
             current_page_num = 1;
-            apiLink = `popular?page=${current_page_num}` + (searchFor === "" ? "" : `&searchFor=${searchFor}`);
+            apiLink = `popular?page=${current_page_num}` + (searchFor === "" ? "" : `&searchFor=${encodeURIComponent(searchFor)}`);
         }
     }
 

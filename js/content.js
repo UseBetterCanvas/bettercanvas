@@ -96,6 +96,7 @@ async function insertReminders(reminders) {
             if (insert.c === -1 && insert.h === storage["reminders"][i].h) {
                 overrides = true;
                 storage["reminders"][i] = insert;
+                found = true;
             } else if (insert.h === storage["reminders"][i].h) {
                 found = true;
             }
@@ -146,10 +147,9 @@ async function reminderWatch() {
     const alertPeriod2 = 1000 * 60 * 60 * 2; // 2 hours
     const storage = await chrome.storage.sync.get(["reminders", "reminder_count"]);
     const now = (new Date()).getTime();
-    storage["reminders"].forEach((reminder, index) => {
-        if (reminder.d < now) {
-            storage["reminders"].splice(index, 1);
-        } else if ((reminder.c == 0 && reminder.d < now + alertPeriod) || (reminder.c == 1 && reminder.d < now + alertPeriod2)) {
+    storage["reminders"] = storage["reminders"].filter(reminder => reminder.d >= now);
+    storage["reminders"].forEach(reminder => {
+        if ((reminder.c == 0 && reminder.d < now + alertPeriod) || (reminder.c == 1 && reminder.d < now + alertPeriod2)) {
             createReminder(reminder, container);
         }
     });
@@ -420,11 +420,11 @@ function inspectDarkMode(withOutput = false) {
             }
             */
             if (r > 245 && g > 245 && b > 245 && !(r === bg0.r && g === bg0.g && b === bg0.b) && !(r === lnk.r && g === lnk.g && b === lnk.b)) {
-                el.style.cssText = (";background:" + options.dark_preset["background-0"] + "!important;color" + options.dark_preset["text-0"] + "!important;") + el.style.cssText;
+                el.style.cssText = (";background:" + options.dark_preset["background-0"] + "!important;color:" + options.dark_preset["text-0"] + "!important;") + el.style.cssText;
                 if (withOutput === true) output += selector + "{background: background-0, color: text-0}\n";
                 bgcount++;
             } else if (r > 225 && r < 245 && g > 225 && g < 245 && b > 225 && b < 245 && !(r === bg1.r && g === bg1.g && b === bg1.b) && !(r === lnk.r && g === lnk.g && b === lnk.b)) {
-                el.style.cssText = (";background:" + options.dark_preset["background-1"] + "!important;color" + options.dark_preset["text-0"] + "!important;") + el.style.cssText;
+                el.style.cssText = (";background:" + options.dark_preset["background-1"] + "!important;color:" + options.dark_preset["text-0"] + "!important;") + el.style.cssText;
                 if (withOutput === true) output += selector + "{background: background-1, color: text-0}";
                 bgcount++;
             }
@@ -1114,7 +1114,7 @@ async function changeColorPreset(colors) {
     clearInterval(changeColorInterval);
     const csrfToken = CSRFtoken();
     const delay = 250;
-    previous = []
+    let previous = []
     colorChanges = [];
 
     // sort cards
@@ -1262,7 +1262,7 @@ function autoDarkModeCheck() {
 
 function toggleAutoDarkMode() {
     clearInterval(timeCheck);
-    if (options.auto_dark && options.auto_dark === false) return;
+    if (!options.auto_dark) return;
     autoDarkModeCheck();
     timeCheck = setInterval(autoDarkModeCheck, 60000);
 }
@@ -1286,6 +1286,7 @@ function runiframeChecker() {
         for (const mutation of mutationList) {
             if (mutation.type === 'childList' && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName == "IFRAME") {
                 const frame = mutation.addedNodes[0];
+                if (!frame.contentDocument || !frame.contentDocument.body) continue;
                 const new_style_element = document.createElement("style");
                 new_style_element.textContent = generateDarkModeCSS();
                 new_style_element.id = "darkcss";
@@ -1413,6 +1414,7 @@ function loadCardAssignments() {
         });
         return;
     }
+    if (!cardAssignments) cardAssignments = preloadAssignmentEls();
     cardAssignments.then(els => {
         try {
             let cards = document.querySelectorAll('.ic-DashboardCard');
