@@ -214,6 +214,7 @@ function isDomainCanvasPage() {
 }
 
 function startExtension() {
+    BetterCanvasAdaptiveColors.observeDocument(document);
     toggleDarkMode();
 
     chrome.storage.sync.get(null, result => {
@@ -406,6 +407,7 @@ function inspectDarkMode(withOutput = false) {
     let bdr = hexToRgb(options.dark_preset["borders"]);
     let lnk = hexToRgb(options.dark_preset["links"]);
     document.querySelectorAll("*").forEach(el => {
+        if (el.hasAttribute("data-bettercanvas-adaptive-colors")) return;
         let style = getComputedStyle(el);
         let bgcolor = style.getPropertyValue("background").match(/rgb\((?<r>\d*)\, ?(?<g>\d*)\, ?(?<b>\d*)\) none/);
         let selector = "class=." + el.className + ",id=#" + el.id;
@@ -1199,7 +1201,7 @@ function generateDarkModeCSS() {
     Object.keys(options.dark_preset).forEach(key => {
         css += "--bc" + key + ":" + options.dark_preset[key] + ";";
     });
-    css += "}" + darkmode_css + (options.device_dark === true ? "}" : "");
+    css += "}" + darkmode_css + BetterCanvasAdaptiveColors.darkModeCSS() + (options.device_dark === true ? "}" : "");
     return css;
 }
 
@@ -1268,35 +1270,68 @@ function toggleAutoDarkMode() {
 }
 
 let iframeObserver;
-function runiframeChecker() {
-    if (current_page === "/" || current_page === "") return;
+const watchedIframes = new WeakSet();
 
-    if (options.dark_mode !== true) {
-        if (iframeObserver) iframeObserver.disconnect();
-        document.querySelectorAll('iframe').forEach((frame) => {
-            if (frame.contentDocument && frame.contentDocument.documentElement && frame.contentDocument.documentElement.querySelector('#darkcss')) {
-                frame.contentDocument.documentElement.querySelector('#darkcss').textContent = '';
-                frame.contentDocument.body.classList.remove("bettercanvas--darkmode--enabled");
-            }
-        });
+function darkModeEnabled() {
+    return options.dark_mode === true || options.device_dark === true;
+}
+
+function syncIframeDarkMode(frame) {
+    let frameDocument;
+    try {
+        frameDocument = frame.contentDocument;
+    } catch (e) {
+        return;
+    }
+    if (!frameDocument || !frameDocument.documentElement) return;
+
+    let style = frameDocument.documentElement.querySelector('#darkcss');
+    if (!darkModeEnabled()) {
+        if (style) style.textContent = '';
+        if (frameDocument.body) frameDocument.body.classList.remove("bettercanvas--darkmode--enabled");
         return;
     }
 
+    if (!style) {
+        style = frameDocument.createElement("style");
+        style.id = "darkcss";
+        frameDocument.documentElement.prepend(style);
+    }
+    style.textContent = generateDarkModeCSS();
+    if (frameDocument.body) frameDocument.body.classList.add("bettercanvas--darkmode--enabled");
+    BetterCanvasAdaptiveColors.observeDocument(frameDocument);
+}
+
+function watchIframe(frame) {
+    if (!watchedIframes.has(frame)) {
+        watchedIframes.add(frame);
+        frame.addEventListener("load", () => syncIframeDarkMode(frame));
+    }
+    syncIframeDarkMode(frame);
+}
+
+function watchIframesInNode(node) {
+    if (node.nodeType !== 1) return;
+    if (node.nodeName === "IFRAME") watchIframe(node);
+    node.querySelectorAll("iframe").forEach(watchIframe);
+}
+
+function runiframeChecker() {
+    if (current_page === "/" || current_page === "") return;
+
+    if (iframeObserver) iframeObserver.disconnect();
+    document.querySelectorAll('iframe').forEach(watchIframe);
+    if (!darkModeEnabled()) return;
+
     const callback = (mutationList) => {
         for (const mutation of mutationList) {
-            if (mutation.type === 'childList' && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName == "IFRAME") {
-                const frame = mutation.addedNodes[0];
-                const new_style_element = document.createElement("style");
-                new_style_element.textContent = generateDarkModeCSS();
-                new_style_element.id = "darkcss";
-                frame.contentDocument.body.classList.add("bettercanvas--darkmode--enabled");
-                frame.contentDocument.documentElement.prepend(new_style_element);
-            }
+            if (mutation.type !== 'childList') continue;
+            mutation.addedNodes.forEach(watchIframesInNode);
         }
     };
 
     iframeObserver = new MutationObserver(callback);
-    iframeObserver.observe(document.querySelector('html'), { childList: true, subtree: true });
+    iframeObserver.observe(document.documentElement, { childList: true, subtree: true });
 }
 
 /* 
