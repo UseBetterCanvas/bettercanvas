@@ -214,6 +214,7 @@ function isDomainCanvasPage() {
 }
 
 function startExtension() {
+    BetterCanvasAdaptiveColors.observeDocument(document);
     toggleDarkMode();
 
     chrome.storage.sync.get(null, result => {
@@ -406,6 +407,7 @@ function inspectDarkMode(withOutput = false) {
     let bdr = hexToRgb(options.dark_preset["borders"]);
     let lnk = hexToRgb(options.dark_preset["links"]);
     document.querySelectorAll("*").forEach(el => {
+        if (el.hasAttribute("data-bettercanvas-adaptive-colors")) return;
         let style = getComputedStyle(el);
         let bgcolor = style.getPropertyValue("background").match(/rgb\((?<r>\d*)\, ?(?<g>\d*)\, ?(?<b>\d*)\) none/);
         let selector = "class=." + el.className + ",id=#" + el.id;
@@ -1199,7 +1201,7 @@ function generateDarkModeCSS() {
     Object.keys(options.dark_preset).forEach(key => {
         css += "--bc" + key + ":" + options.dark_preset[key] + ";";
     });
-    css += "}" + darkmode_css + (options.device_dark === true ? "}" : "");
+    css += "}" + darkmode_css + BetterCanvasAdaptiveColors.darkModeCSS() + (options.device_dark === true ? "}" : "");
     return css;
 }
 
@@ -1291,6 +1293,7 @@ function runiframeChecker() {
                 new_style_element.id = "darkcss";
                 frame.contentDocument.body.classList.add("bettercanvas--darkmode--enabled");
                 frame.contentDocument.documentElement.prepend(new_style_element);
+                BetterCanvasAdaptiveColors.observeDocument(frame.contentDocument);
             }
         }
     };

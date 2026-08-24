@@ -163,3 +163,12 @@
         opacity: .5;
     }
 }
+
+/* Preserve Canvas-authored colors in light mode; dark values are supplied by #darkcss. */
+.bettercanvas-adaptive-foreground {--bettercanvas-authored-foreground:var(--bettercanvas-authored-foreground-light)}
+.bettercanvas-adaptive-background {--bettercanvas-authored-background:var(--bettercanvas-authored-background-light)}
+.bettercanvas-adaptive-border {--bettercanvas-authored-border:var(--bettercanvas-authored-border-light)}
+.bettercanvas-adaptive-border-top {--bettercanvas-authored-border-top:var(--bettercanvas-authored-border-top-light)}
+.bettercanvas-adaptive-border-right {--bettercanvas-authored-border-right:var(--bettercanvas-authored-border-right-light)}
+.bettercanvas-adaptive-border-bottom {--bettercanvas-authored-border-bottom:var(--bettercanvas-authored-border-bottom-light)}
+.bettercanvas-adaptive-border-left {--bettercanvas-authored-border-left:var(--bettercanvas-authored-border-left-light)}
