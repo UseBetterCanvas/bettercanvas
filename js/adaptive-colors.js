@@ -82,68 +82,20 @@
     function adaptElement(element) {
         if (element.hasAttribute(adaptedAttribute)) return;
 
-        const originalStyle = element.getAttribute("style") || "";
-        const declarations = parseDeclarations(originalStyle);
-        const hasComplexBackground = declarations.some(isComplexBackgroundDeclaration);
-        const adaptedDeclarations = [];
-        const roles = new Set();
+        const result = adaptAuthoredValues(
+            element.getAttribute("style") || "",
+            element.getAttribute("bgcolor"),
+            element.getAttribute("color")
+        );
 
-        declarations.forEach(declaration => {
-            const role = adaptiveProperties[declaration.property];
-            if (role === "foreground" && hasComplexBackground) {
-                adaptedDeclarations.push(declaration);
-                return;
-            }
-            const adaptiveColor = role
-                ? findAdaptiveColor(declaration.property, declaration.value)
-                : null;
+        if (result.roles.length === 0) return;
 
-            if (!role || !adaptiveColor) {
-                adaptedDeclarations.push(declaration);
-                return;
-            }
-
-            adaptedDeclarations.push(lightColorDeclaration(role, adaptiveColor.lightColor));
-            adaptedDeclarations.push({
-                property: declaration.property,
-                value: adaptiveColor.adaptedValue,
-                important: declaration.important
-            });
-            roles.add(role);
-        });
-
-        const legacyBackground = element.getAttribute("bgcolor");
-        if (legacyBackground && isSimpleColor(legacyBackground)) {
-            adaptedDeclarations.push(lightColorDeclaration("background", legacyBackground));
-            adaptedDeclarations.push({
-                property: "background-color",
-                value: "var(--bettercanvas-authored-background)",
-                important: false
-            });
-            element.removeAttribute("bgcolor");
-            roles.add("background");
-        }
-
-        const legacyForeground = element.getAttribute("color");
-        if (legacyForeground && isSimpleColor(legacyForeground)) {
-            adaptedDeclarations.push(lightColorDeclaration("foreground", legacyForeground));
-            adaptedDeclarations.push({
-                property: "color",
-                value: "var(--bettercanvas-authored-foreground)",
-                important: false
-            });
-            element.removeAttribute("color");
-            roles.add("foreground");
-        }
-
-        if (roles.size === 0) return;
-
-        element.setAttribute("style", serializeDeclarations(adaptedDeclarations));
-        roles.forEach(role => element.classList.add("bettercanvas-adaptive-" + role));
+        element.setAttribute("style", result.style);
+        result.roles.forEach(role => element.classList.add("bettercanvas-adaptive-" + role));
         element.setAttribute(adaptedAttribute, "");
     }
 
-    function adaptStyleText(style) {
+    function adaptAuthoredValues(style, legacyBackground, legacyForeground) {
         const declarations = parseDeclarations(style);
         const hasComplexBackground = declarations.some(isComplexBackgroundDeclaration);
         const adaptedDeclarations = [];
@@ -158,10 +110,12 @@
             const adaptiveColor = role
                 ? findAdaptiveColor(declaration.property, declaration.value)
                 : null;
+
             if (!role || !adaptiveColor) {
                 adaptedDeclarations.push(declaration);
                 return;
             }
+
             adaptedDeclarations.push(lightColorDeclaration(role, adaptiveColor.lightColor));
             adaptedDeclarations.push({
                 property: declaration.property,
@@ -171,7 +125,34 @@
             roles.add(role);
         });
 
-        return { style: serializeDeclarations(adaptedDeclarations), roles: Array.from(roles) };
+        if (
+            legacyBackground &&
+            isSimpleColor(legacyBackground) &&
+            !hasComplexBackground &&
+            !roles.has("background")
+        ) {
+            adaptedDeclarations.push(lightColorDeclaration("background", legacyBackground));
+            roles.add("background");
+        }
+
+        if (
+            legacyForeground &&
+            isSimpleColor(legacyForeground) &&
+            !hasComplexBackground &&
+            !roles.has("foreground")
+        ) {
+            adaptedDeclarations.push(lightColorDeclaration("foreground", legacyForeground));
+            roles.add("foreground");
+        }
+
+        return {
+            style: serializeDeclarations(adaptedDeclarations),
+            roles: Array.from(roles)
+        };
+    }
+
+    function adaptStyleText(style) {
+        return adaptAuthoredValues(style);
     }
 
     function darkModeCSS() {
@@ -333,6 +314,7 @@
 
     return {
         adaptAuthoredColors,
+        adaptAuthoredValues,
         adaptStyleText,
         darkModeCSS,
         observeDocument,

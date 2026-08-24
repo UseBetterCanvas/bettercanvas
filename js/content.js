@@ -1270,36 +1270,68 @@ function toggleAutoDarkMode() {
 }
 
 let iframeObserver;
-function runiframeChecker() {
-    if (current_page === "/" || current_page === "") return;
+const watchedIframes = new WeakSet();
 
-    if (options.dark_mode !== true) {
-        if (iframeObserver) iframeObserver.disconnect();
-        document.querySelectorAll('iframe').forEach((frame) => {
-            if (frame.contentDocument && frame.contentDocument.documentElement && frame.contentDocument.documentElement.querySelector('#darkcss')) {
-                frame.contentDocument.documentElement.querySelector('#darkcss').textContent = '';
-                frame.contentDocument.body.classList.remove("bettercanvas--darkmode--enabled");
-            }
-        });
+function darkModeEnabled() {
+    return options.dark_mode === true || options.device_dark === true;
+}
+
+function syncIframeDarkMode(frame) {
+    let frameDocument;
+    try {
+        frameDocument = frame.contentDocument;
+    } catch (e) {
+        return;
+    }
+    if (!frameDocument || !frameDocument.documentElement) return;
+
+    let style = frameDocument.documentElement.querySelector('#darkcss');
+    if (!darkModeEnabled()) {
+        if (style) style.textContent = '';
+        if (frameDocument.body) frameDocument.body.classList.remove("bettercanvas--darkmode--enabled");
         return;
     }
 
+    if (!style) {
+        style = frameDocument.createElement("style");
+        style.id = "darkcss";
+        frameDocument.documentElement.prepend(style);
+    }
+    style.textContent = generateDarkModeCSS();
+    if (frameDocument.body) frameDocument.body.classList.add("bettercanvas--darkmode--enabled");
+    BetterCanvasAdaptiveColors.observeDocument(frameDocument);
+}
+
+function watchIframe(frame) {
+    if (!watchedIframes.has(frame)) {
+        watchedIframes.add(frame);
+        frame.addEventListener("load", () => syncIframeDarkMode(frame));
+    }
+    syncIframeDarkMode(frame);
+}
+
+function watchIframesInNode(node) {
+    if (node.nodeType !== 1) return;
+    if (node.nodeName === "IFRAME") watchIframe(node);
+    node.querySelectorAll("iframe").forEach(watchIframe);
+}
+
+function runiframeChecker() {
+    if (current_page === "/" || current_page === "") return;
+
+    if (iframeObserver) iframeObserver.disconnect();
+    document.querySelectorAll('iframe').forEach(watchIframe);
+    if (!darkModeEnabled()) return;
+
     const callback = (mutationList) => {
         for (const mutation of mutationList) {
-            if (mutation.type === 'childList' && mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeName == "IFRAME") {
-                const frame = mutation.addedNodes[0];
-                const new_style_element = document.createElement("style");
-                new_style_element.textContent = generateDarkModeCSS();
-                new_style_element.id = "darkcss";
-                frame.contentDocument.body.classList.add("bettercanvas--darkmode--enabled");
-                frame.contentDocument.documentElement.prepend(new_style_element);
-                BetterCanvasAdaptiveColors.observeDocument(frame.contentDocument);
-            }
+            if (mutation.type !== 'childList') continue;
+            mutation.addedNodes.forEach(watchIframesInNode);
         }
     };
 
     iframeObserver = new MutationObserver(callback);
-    iframeObserver.observe(document.querySelector('html'), { childList: true, subtree: true });
+    iframeObserver.observe(document.documentElement, { childList: true, subtree: true });
 }
 
 /* 
