@@ -281,12 +281,12 @@ Learn more about tree commands for Windows [here](https://learn.microsoft.com/en
 
 ## License
 
-This software is licensed under the GNU Affero General Public License v3.0 (AGPL), with the following additional restrictions:
+This software is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). Under this license:
 
-Commercial use is prohibited. You may not use this software, or any modified version of it, in any product or service that is sold, monetized, or used in connection with a commercial or for-profit activity.
+Commercial use is permitted. You may use this software, or any modified version of it, in any product or service, including ones that are sold, monetized, or used in connection with a commercial or for-profit activity, provided you comply with the license terms.
 
-No public redistribution. You may not publicly re-upload, fork, or distribute the software (or modified versions) on any platform, repository, or hosting service (e.g., GitHub, npm, Chrome Web Store) without express written permission.
+Public redistribution is permitted under the same license. You may publicly re-upload, fork, or distribute the software (or modified versions) on any platform, repository, or hosting service (e.g., GitHub, npm, Chrome Web Store), provided you keep the AGPL-3.0 license and make the corresponding source code available.
 
-Competing services prohibited. You may not use this software, modified or unmodified, to create or offer a public or private alternative to BetterCanvas — even if the service is offered for free.
+Network use requires source disclosure. If you modify this software and offer it to users over a network, including as an alternative to BetterCanvas, you must make the complete source code of your modified version available under the AGPL-3.0, even if the service is free.
 
 ![Better Canvas](/icon/icon-48.png)
